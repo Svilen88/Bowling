@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 
 
 class Bowling:
@@ -72,6 +72,8 @@ def home():
 @app.route('/api/game/game=<game_id>/user=<user_id>', methods=['POST'])
 def game_request(game_id, user_id):
     content = request.json
+    if content is None:
+        return make_response('Bad request', 400)
     games.setdefault(game_id, {user_id: Bowling(content['rolls'])})
     return jsonify({'success': []})
 
@@ -82,7 +84,7 @@ def show_score(game_id, user_id):
         games[game_id][user_id].play()
         return {'success': [games[game_id][user_id].show_score()]}
     except KeyError:
-        return {'error'}
+        return make_response('Bad request', 400)
 
 
 if __name__ == '__main__':
