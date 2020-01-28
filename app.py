@@ -74,13 +74,16 @@ def game_request(game_id, user_id):
     content = request.json
     if content is None:
         return make_response('Bad request', 400)
-    games.setdefault(game_id, {user_id: Bowling(content['rolls'])})
+    games.setdefault(game_id, {})
+    games[game_id][user_id] = Bowling(content['rolls']) 
     return jsonify({'success': []})
 
 
 @app.route('/api/game/game=<game_id>/user=<user_id>', methods=['GET'])
 def show_score(game_id, user_id):
     try:
+
+        print(games)
         games[game_id][user_id].play()
         return {'success': [games[game_id][user_id].show_score()]}
     except KeyError:
